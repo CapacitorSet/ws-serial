@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>WebSocket Test</title>
+<!-- Based on https://www.websocket.org/echo.html -->
+<script language="javascript" type="text/javascript">
+  var wsUri = 'ws://' + window.location.hostname + ':8080/';
+  var output;
+  function init() {
+    output = document.getElementById('output');
+    testWebSocket();
+  }
+  function testWebSocket() {
+    websocket = new WebSocket(wsUri);
+    websocket.onopen = function (evt) {
+      writeToScreen('<i>Connesso.</i>');
+    };
+    websocket.onclose = function (evt) {
+      writeToScreen('<i>Disconnesso.</i>');
+    };
+    websocket.onmessage = function (evt) {
+      writeToScreen('<tt style="color: blue;">&gt; ' + evt.data + '</tt>');
+      if (evt.data == "0") {
+        document.getElementById("uscita").style["background-color"] = "yellow";
+      }
+      if (evt.data == "1") {
+        document.getElementById("uscita").style["background-color"] = "blue";
+      }
+    };
+    websocket.onerror = function (evt) {
+      writeToScreen('<span style="color: red;">ERROR:</span> ' + evt.data);
+    };
+  }
+  function doSend(message) {
+    writeToScreen('<tt style="color: green;">&lt; ' + message + '</tt>');
+    websocket.send(message);
+  }
+  function writeToScreen(message) {
+    var pre = document.createElement('p');
+    pre.style.wordWrap = 'break-word';
+    pre.innerHTML = message;
+    output.appendChild(pre);
+  }
+  window.addEventListener('load', init, false);
+</script>
+<div style="text-align: center;">
+  <h2>Applicazione di esempio con le WebSocket</h2>
+  <table border=1 style="margin: auto;">
+    <tr>
+      <td colspan=2>
+        <h4>Comandi</h4>
+      </td>
+      <td>
+        <h4>Uscite</h4>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <button onclick="doSend('apri\n')">Apertura</button>
+      </td>
+      <td>
+        <button onclick="doSend('chiudi\n')">Chiusura</button>
+      </td>
+      <td>
+        <div id="uscita" style="margin: auto; width: 30px; height: 30px; background-color: silver;">&nbsp;</div>
+      </td>
+    </tr>
+  </table>
+</div>
+<div id="output"></div>
